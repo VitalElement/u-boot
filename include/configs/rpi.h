@@ -154,11 +154,14 @@
 	func(DHCP, dhcp, na)
 #include <config_distro_bootcmd.h>
 
+
+
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"dhcpuboot=usb start; dhcp u-boot.uimg; bootm\0" \
+	"bootcmd=fatload mmc 0 0x05000000 /bootimage.fit; bootm 0x05000000\0" \
 	ENV_DEVICE_SETTINGS \
-	ENV_MEM_LAYOUT_SETTINGS \
-	BOOTENV
+	ENV_MEM_LAYOUT_SETTINGS 
 
+#define CONFIG_SYS_BOOTM_LEN	(32*1024*1024)
 
 #endif
