@@ -52,3 +52,20 @@ int tegra_pcie_board_init(void)
 
 	return 0;
 }
+
+int ft_board_setup(void *fdt, bd_t *bd)
+{
+	const char* mac = env_get("ethaddr");
+	if(!mac) {
+		printf("ethaddr not set in environment... error no mac address\n");
+		return 0;
+	}
+
+	int offset;
+	offset = fdt_path_offset(fdt, "/chosen");
+
+	fdt_setprop(fdt, offset, "nvidia,ether-mac", mac, 18);
+
+	return 0;
+}
+
