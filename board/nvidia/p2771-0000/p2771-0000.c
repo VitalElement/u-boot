@@ -55,16 +55,26 @@ int tegra_pcie_board_init(void)
 
 int ft_board_setup(void *fdt, bd_t *bd)
 {
+	int offset;
+	offset = fdt_path_offset(fdt, "/chosen");
+	
 	const char* mac = env_get("ethaddr");
 	if(!mac) {
 		printf("ethaddr not set in environment... error no mac address\n");
+		goto wifi;
+	}
+
+
+	fdt_setprop(fdt, offset, "nvidia,ether-mac", mac, 18);
+
+wifi:
+	mac = env_get("wifiaddr");
+	if(!mac) {
+		printf("wifiaddr not set in envionment... error no wifi mac address\n");
 		return 0;
 	}
 
-	int offset;
-	offset = fdt_path_offset(fdt, "/chosen");
-
-	fdt_setprop(fdt, offset, "nvidia,ether-mac", mac, 18);
+	fdt_setprop(fdt, offset, "nvidia,wifi-mac", mac, 18);
 
 	return 0;
 }

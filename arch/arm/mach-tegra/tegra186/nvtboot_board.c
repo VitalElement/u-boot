@@ -317,6 +317,36 @@ static int set_ethaddr_from_nvtboot(void)
 	return 0;
 }
 
+static int set_wifiaddr_from_nvtboot(void)
+{
+	const void *nvtboot_blob = (void *)nvtboot_boot_x0;
+        int ret, node, len;
+        const u32 *prop;
+
+        /* Already a valid address in the environment? If so, keep it */
+        if (env_get("wifiaddr"))
+                return 0;
+
+        node = fdt_path_offset(nvtboot_blob, "/chosen");
+        if (node < 0) {
+                printf("Can't find /chosen node in nvtboot DTB\n");
+                return node;
+        }
+        prop = fdt_getprop(nvtboot_blob, node, "nvidia,wifi-mac", &len);
+        if (!prop) {
+                printf("Can't find nvidia,wifi-mac property in nvtboot DTB\n");
+                return -ENOENT;
+        }
+
+        ret = env_set("wifiaddr", (void *)prop);
+        if (ret) {
+                printf("Failed to set wifiaddr from nvtboot DTB: %d\n", ret);
+                return ret;
+        }
+
+        return 0;
+}
+
 int tegra_soc_board_init_late(void)
 {
 	set_calculated_env_vars();
@@ -327,6 +357,8 @@ int tegra_soc_board_init_late(void)
 	set_fdt_addr();
 	/* Ignore errors here; not all cases care about Ethernet addresses */
 	set_ethaddr_from_nvtboot();
+
+	set_wifiaddr_from_nvtboot();
 
 	return 0;
 }
