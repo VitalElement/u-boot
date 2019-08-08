@@ -31,12 +31,14 @@
         "bootcmd_mmc1=setenv devnum 1; run mmc_boot\0" \
         "boot_prefixes=/ /boot/\0" \
         "defaultdevplist=1\0" \
+	"boot_images=updateimage.fit bootimage.fit\0" \
         "mmc_boot=if mmc dev ${devnum}; then setenv devtype mmc; run scan_dev_for_boot_part; fi\0" \
-        "scan_dev_for_boot=echo Scanning ${devtype} ${devnum}:${distro_bootpart}...; for prefix in ${boot_prefixes}; do run scan_dev_for_bootimage; done\0" \
-        "scan_dev_for_bootimage=if test -e ${devtype} ${devnum}:${distro_bootpart} ${prefix}bootimage.fit; then echo Found ${prefix}bootimage.fit; run boot_bootimage; echo IMAGE FAILED: continuing...; fi\0" \
+        "scan_dev_for_boot=echo Scanning ${devtype} ${devnum}:${distro_bootpart}...; for prefix in ${boot_prefixes}; do run scan_dev_for_bootimages; done\0" \
+	"scan_dev_for_bootimages=for image in ${boot_images}; do setenv bootimage ${image}; run scan_dev_for_bootimage; done\0" \
+        "scan_dev_for_bootimage=if test -e ${devtype} ${devnum}:${distro_bootpart} ${prefix}${bootimage}; then echo Found ${prefix}${bootimage}; run boot_bootimage; echo IMAGE FAILED: continuing...; fi\0" \
         "scan_dev_for_boot_part=part list ${devtype} ${devnum} -bootable devplist; || setenv devplist ${defaultdevplist}; for distro_bootpart in ${devplist}; do if fstype ${devtype} ${devnum}:${distro_bootpart} bootfstype; then run scan_dev_for_boot; fi; done\0" \
         "bootcmd=for target in ${boot_targets}; do run bootcmd_${target}; done\0" \
-        "boot_bootimage=ext4load ${devtype} ${devnum}:${distro_bootpart} 0xd0000000 ${prefix}bootimage.fit; bootm 0xd0000000\0" \
+        "boot_bootimage=ext4load ${devtype} ${devnum}:${distro_bootpart} 0xd0000000 ${prefix}${bootimage}; bootm 0xd0000000\0" \
         "ramdisk_addr_r_size=02000000\0"
 
 #include "tegra-common-post.h"
