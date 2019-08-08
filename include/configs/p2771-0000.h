@@ -26,9 +26,9 @@
 #define BOARD_EXTRA_ENV_SETTINGS \
         "calculated_vars=kernel_addr_r fdt_addr_r scriptaddr pxefile_addr_r " \
         "ramdisk_addr_r\0" \
-        "boot_targets=mmc2 mmc0\0" \
+        "boot_targets=mmc1 mmc0\0" \
         "bootcmd_mmc0=setenv devnum 0; run mmc_boot\0" \
-        "bootcmd_mmc2=setenv devnum 2; run mmc_boot\0" \
+        "bootcmd_mmc1=setenv devnum 1; run mmc_boot\0" \
         "boot_prefixes=/ /boot/\0" \
         "defaultdevplist=1\0" \
         "mmc_boot=if mmc dev ${devnum}; then setenv devtype mmc; run scan_dev_for_boot_part; fi\0" \
